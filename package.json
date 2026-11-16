@@ -16,6 +16,14 @@
     "test": "vitest run --passWithNoTests",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "build": "tsc"
+    "build": "tsc",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{js,ts}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,html,css,md}": "prettier --write"
   }
 }
