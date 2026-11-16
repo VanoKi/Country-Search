@@ -1,7 +1,10 @@
-import { debounce } from "./debounce";
-import { mapCountryResponse, type CountryCardData } from "./mapCountryResponse";
-import { searchCountries } from "./searchCountries";
-import { classifySearchError, type SearchErrorKind } from "./searchError";
+import { debounce } from "./debounce.js";
+import {
+  mapCountryResponse,
+  type CountryCardData,
+} from "./mapCountryResponse.js";
+import { searchCountries } from "./searchCountries.js";
+import { classifySearchError, type SearchErrorKind } from "./searchError.js";
 
 export type SearchStatus = "idle" | "loading" | "results" | "empty" | "error";
 
