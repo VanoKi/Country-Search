@@ -9,6 +9,7 @@ describe("searchCountries", () => {
 
   it("returns countries from a successful response", async () => {
     const countries = [{ name: { common: "Spain" } }];
+    const timeoutMock = vi.spyOn(AbortSignal, "timeout");
     const fetchMock = vi.fn().mockResolvedValue({
       ok: true,
       status: 200,
@@ -19,8 +20,9 @@ describe("searchCountries", () => {
     await expect(searchCountries("Spain")).resolves.toEqual(countries);
     expect(fetchMock).toHaveBeenCalledWith(
       "https://countries.dev/name/Spain",
-      expect.objectContaining({ signal: undefined }),
+      expect.objectContaining({ signal: expect.any(AbortSignal) }),
     );
+    expect(timeoutMock).toHaveBeenCalledWith(expect.any(Number));
   });
 
   it("treats 404 as an empty result", async () => {
@@ -56,7 +58,7 @@ describe("searchCountries", () => {
     await searchCountries("Spain", controller.signal);
 
     expect(fetchMock).toHaveBeenCalledWith("https://countries.dev/name/Spain", {
-      signal: controller.signal,
+      signal: expect.any(AbortSignal),
     });
   });
 

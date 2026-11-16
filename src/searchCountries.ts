@@ -8,13 +8,20 @@ export class HttpError extends Error {
   }
 }
 
+const REQUEST_TIMEOUT_MS = 10_000;
+
 export async function searchCountries(
   query: string,
   signal?: AbortSignal,
 ): Promise<unknown[]> {
+  const timeoutSignal = AbortSignal.timeout(REQUEST_TIMEOUT_MS);
+  const requestSignal = signal
+    ? AbortSignal.any([signal, timeoutSignal])
+    : timeoutSignal;
+
   const response = await fetch(
     `https://countries.dev/name/${encodeURIComponent(query)}`,
-    { signal },
+    { signal: requestSignal },
   );
 
   if (response.status === 404) {
