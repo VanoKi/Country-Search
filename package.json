@@ -19,7 +19,7 @@
     "test": "vitest run --passWithNoTests",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "build": "tsc",
+    "build": "node --input-type=module -e \"import { rmSync } from 'node:fs'; rmSync('dist', { recursive: true, force: true });\" && tsc",
     "prepare": "husky"
   },
   "lint-staged": {
