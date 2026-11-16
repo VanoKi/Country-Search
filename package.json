@@ -15,6 +15,7 @@
   "scripts": {
     "test": "vitest run --passWithNoTests",
     "lint": "eslint .",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "build": "tsc"
   }
 }
