@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { createSearchController } from "./searchController";
+import { createSearchController, type SearchState } from "./searchController";
 
 describe("search request race", () => {
   afterEach(() => {
@@ -33,10 +33,10 @@ describe("search request race", () => {
     });
     vi.stubGlobal("fetch", fetchMock);
 
-    let latestState = {
+    let latestState: SearchState = {
       status: "idle",
       query: "",
-      countries: [] as Array<Record<string, unknown>>,
+      countries: [],
     };
     const controller = createSearchController((state) => {
       latestState = state;
