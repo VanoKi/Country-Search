@@ -48,4 +48,29 @@ describe("debounce", () => {
 
     expect(callback).toHaveBeenCalledExactlyOnceWith("latest", 2);
   });
+
+  it("cancels a pending invocation", () => {
+    vi.useFakeTimers();
+    const callback = vi.fn();
+    const debounced = debounce(callback, 100);
+
+    debounced("pending");
+    debounced.cancel();
+    vi.advanceTimersByTime(100);
+
+    expect(callback).not.toHaveBeenCalled();
+  });
+
+  it("flushes the latest invocation immediately and only once", () => {
+    vi.useFakeTimers();
+    const callback = vi.fn();
+    const debounced = debounce(callback, 100);
+
+    debounced("first");
+    debounced("latest");
+    debounced.flush();
+    vi.advanceTimersByTime(100);
+
+    expect(callback).toHaveBeenCalledExactlyOnceWith("latest");
+  });
 });
