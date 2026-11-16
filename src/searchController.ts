@@ -20,7 +20,7 @@ export interface SearchState {
 export type SearchStateListener = (state: SearchState) => void;
 
 export interface SearchController {
-  setQuery(query: string): void;
+  setQuery(query: string, options?: { immediate?: boolean }): void;
 }
 
 export function createSearchController(
@@ -35,7 +35,7 @@ export function createSearchController(
     onStateChange(state);
   };
 
-  const runSearch = debounce(async (query: string): Promise<void> => {
+  const executeSearch = async (query: string): Promise<void> => {
     const controller = activeController;
     if (!controller || query !== currentQuery) {
       return;
@@ -73,10 +73,11 @@ export function createSearchController(
         errorKind: failure.kind,
       });
     }
-  }, debounceMs);
+  };
+  const runSearch = debounce(executeSearch, debounceMs);
 
   return {
-    setQuery(query: string): void {
+    setQuery(query: string, options?: { immediate?: boolean }): void {
       currentQuery = query.trim();
       activeController?.abort();
       activeController = undefined;
@@ -88,7 +89,12 @@ export function createSearchController(
 
       activeController = new AbortController();
       emit({ status: "loading", query: currentQuery, countries: [] });
-      runSearch(currentQuery);
+      if (options?.immediate) {
+        runSearch.cancel();
+        void executeSearch(currentQuery);
+      } else {
+        runSearch(currentQuery);
+      }
     },
   };
 }
