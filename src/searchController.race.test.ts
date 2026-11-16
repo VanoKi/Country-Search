@@ -88,6 +88,7 @@ describe("search request race", () => {
         },
       ],
     } as Response);
+    await vi.advanceTimersByTimeAsync(0);
     await Promise.resolve();
     await Promise.resolve();
     await Promise.resolve();

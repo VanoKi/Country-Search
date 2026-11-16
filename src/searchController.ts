@@ -1,4 +1,5 @@
 import { debounce } from "./debounce.js";
+import { createCachedCountrySearch } from "./cachedCountrySearch.js";
 import {
   mapCountryResponse,
   type CountryCardData,
@@ -28,6 +29,7 @@ export function createSearchController(
 ): SearchController {
   let activeController: AbortController | undefined;
   let currentQuery = "";
+  const cachedSearch = createCachedCountrySearch(searchCountries);
 
   const emit = (state: SearchState): void => {
     onStateChange(state);
@@ -42,7 +44,7 @@ export function createSearchController(
     emit({ status: "loading", query, countries: [] });
 
     try {
-      const rawCountries = await searchCountries(query, controller.signal);
+      const rawCountries = await cachedSearch(query, controller.signal);
       if (controller.signal.aborted || query !== currentQuery) {
         return;
       }
