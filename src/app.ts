@@ -4,6 +4,23 @@ import {
 } from "./searchController.js";
 import type { CountryCardData } from "./mapCountryResponse.js";
 
+const SEARCH_HISTORY_KEY = "country-search-history";
+const SEARCH_HISTORY_LIMIT = 5;
+
+function loadSearchHistory(): string[] {
+  try {
+    const saved = localStorage.getItem(SEARCH_HISTORY_KEY);
+    const parsed: unknown = saved ? JSON.parse(saved) : [];
+    return Array.isArray(parsed)
+      ? parsed
+          .filter((query): query is string => typeof query === "string")
+          .slice(0, SEARCH_HISTORY_LIMIT)
+      : [];
+  } catch {
+    return [];
+  }
+}
+
 function makeElement<K extends keyof HTMLElementTagNameMap>(
   tagName: K,
   className?: string,
@@ -58,8 +75,13 @@ export function mountCountrySearch(root: HTMLElement): void {
     "Start typing to search · results update as you go",
   );
   searchNote.id = "search-note";
+  const historyPanel = makeElement("div", "history-panel");
+  historyPanel.hidden = true;
+  const historyLabel = makeElement("span", "history-label", "RECENT SEARCHES");
+  const historyItems = makeElement("div", "history-items");
+  historyPanel.append(historyLabel, historyItems);
   searchForm.append(inputLabel, searchMark, input);
-  hero.append(eyebrow, title, intro, searchForm, searchNote);
+  hero.append(eyebrow, title, intro, searchForm, searchNote, historyPanel);
 
   const content = makeElement("section", "content-area");
   content.setAttribute("aria-label", "Country search results");
@@ -93,7 +115,44 @@ export function mountCountrySearch(root: HTMLElement): void {
     query: "",
     countries: [],
   };
+  let history = loadSearchHistory();
   const controller = createSearchController(renderState);
+
+  function renderHistory(): void {
+    historyPanel.hidden = history.length === 0;
+    const historyButtons = history.map((query) => {
+      const button = makeElement("button", "history-item", query);
+      button.type = "button";
+      button.addEventListener("click", () => {
+        input.value = query;
+        controller.setQuery(query, { immediate: true });
+        input.focus();
+      });
+      return button;
+    });
+    historyItems.replaceChildren(...historyButtons);
+  }
+
+  function rememberQuery(query: string): void {
+    const normalizedQuery = query.trim();
+    if (!normalizedQuery) return;
+
+    history = [
+      normalizedQuery,
+      ...history.filter(
+        (previousQuery) =>
+          previousQuery.toLocaleLowerCase() !==
+          normalizedQuery.toLocaleLowerCase(),
+      ),
+    ].slice(0, SEARCH_HISTORY_LIMIT);
+
+    try {
+      localStorage.setItem(SEARCH_HISTORY_KEY, JSON.stringify(history));
+    } catch {
+      // Search remains available if browser storage is disabled or full.
+    }
+    renderHistory();
+  }
 
   function renderDetails(country: CountryCardData | undefined): void {
     if (!country) {
@@ -214,6 +273,13 @@ export function mountCountrySearch(root: HTMLElement): void {
 
   function renderState(state: SearchState): void {
     latestState = state;
+    if (
+      state.status === "results" ||
+      state.status === "empty" ||
+      state.status === "error"
+    ) {
+      rememberQuery(state.query);
+    }
     results.replaceChildren();
     stateMessage.replaceChildren();
     stateMessage.className = "state-message";
@@ -311,5 +377,6 @@ export function mountCountrySearch(root: HTMLElement): void {
 
   searchForm.addEventListener("submit", (event) => event.preventDefault());
   input.addEventListener("input", () => controller.setQuery(input.value));
+  renderHistory();
   renderState(latestState);
 }
