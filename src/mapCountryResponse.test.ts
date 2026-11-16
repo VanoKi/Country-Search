@@ -44,4 +44,24 @@ describe("mapCountryResponse", () => {
 
     expect(rawCountry).toEqual(originalCountry);
   });
+
+  it("maps detail fields for the country detail view", () => {
+    const rawCountry = {
+      name: "Spain",
+      flag: "🇪🇸",
+      capital: "Madrid",
+      region: "Europe",
+      population: 47351567,
+      languages: [{ name: "Spanish" }],
+      area: 505990,
+      borders: ["AND", "FRA", "GIB", "PRT"],
+      currencies: [{ code: "EUR", name: "Euro", symbol: "€" }],
+    };
+
+    expect(mapCountryResponse(rawCountry)).toMatchObject({
+      area: 505990,
+      borders: ["AND", "FRA", "GIB", "PRT"],
+      currencies: [{ code: "EUR", name: "Euro", symbol: "€" }],
+    });
+  });
 });
