@@ -4,6 +4,7 @@ import { HttpError, searchCountries } from "./searchCountries";
 describe("searchCountries", () => {
   afterEach(() => {
     vi.unstubAllGlobals();
+    vi.restoreAllMocks();
   });
 
   it("returns countries from a successful response", async () => {
@@ -57,5 +58,65 @@ describe("searchCountries", () => {
     expect(fetchMock).toHaveBeenCalledWith("https://countries.dev/name/Spain", {
       signal: controller.signal,
     });
+  });
+
+  it("composes the caller signal with a timeout and reports TimeoutError", async () => {
+    const callerController = new AbortController();
+    const timeoutController = new AbortController();
+    const nativeAny = AbortSignal.any.bind(AbortSignal);
+    const timeoutMock = vi
+      .spyOn(AbortSignal, "timeout")
+      .mockReturnValue(timeoutController.signal);
+    const anyMock = vi
+      .spyOn(AbortSignal, "any")
+      .mockImplementation((signals) => nativeAny(signals));
+
+    const fetchMock = vi.fn((_url: string, init?: RequestInit) => {
+      return new Promise<Response>((_resolve, reject) => {
+        const signal = init?.signal;
+        signal?.addEventListener("abort", () => reject(signal.reason), {
+          once: true,
+        });
+        timeoutController.abort(
+          new DOMException("The request timed out", "TimeoutError"),
+        );
+      });
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(
+      searchCountries("Spain", callerController.signal),
+    ).rejects.toMatchObject({ name: "TimeoutError" });
+
+    expect(timeoutMock).toHaveBeenCalledWith(expect.any(Number));
+    expect(anyMock).toHaveBeenCalledWith([
+      callerController.signal,
+      timeoutController.signal,
+    ]);
+  });
+
+  it("preserves AbortError when the caller cancels the request", async () => {
+    const callerController = new AbortController();
+    const timeoutController = new AbortController();
+    const nativeAny = AbortSignal.any.bind(AbortSignal);
+    vi.spyOn(AbortSignal, "timeout").mockReturnValue(timeoutController.signal);
+    vi.spyOn(AbortSignal, "any").mockImplementation((signals) =>
+      nativeAny(signals),
+    );
+
+    const fetchMock = vi.fn((_url: string, init?: RequestInit) => {
+      return new Promise<Response>((_resolve, reject) => {
+        const signal = init?.signal;
+        signal?.addEventListener("abort", () => reject(signal.reason), {
+          once: true,
+        });
+        callerController.abort(new DOMException("Canceled", "AbortError"));
+      });
+    });
+    vi.stubGlobal("fetch", fetchMock);
+
+    await expect(
+      searchCountries("Spain", callerController.signal),
+    ).rejects.toMatchObject({ name: "AbortError" });
   });
 });
