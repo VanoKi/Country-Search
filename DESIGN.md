@@ -35,6 +35,19 @@ languages, borders, and currencies once. If those arrays contain `L`, `B`, and
 in the total size of those arrays. The returned arrays require **O(L + B + C)**
 additional space.
 
+## Search cache and history
+
+`createCachedCountrySearch` in `src/cachedCountrySearch.ts` uses a `Map` for
+completed results and another `Map` for in-flight requests. Cache lookup and
+in-flight deduplication are **O(1) average** by query. Storing a response is
+**O(1)** map work plus the response reference; cached payloads use **O(S)**
+space for `S` response items across cached queries. Each active consumer is
+tracked in a `Set`, so adding or removing a caller is **O(1) average**. The
+shared network request is aborted only when the final consumer cancels.
+
+The UI stores at most five unique recent query strings in `localStorage`. Its
+memory and storage use are bounded by **O(H)**, where `H ≤ 5`.
+
 ## Clean-code choices
 
 - **Single responsibility:** `debounce.ts` handles timer reset behavior;
