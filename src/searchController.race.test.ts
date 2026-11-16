@@ -15,6 +15,7 @@ describe("search request race", () => {
       signal: AbortSignal;
       resolve: (response: Response) => void;
     }> = [];
+    const abortReasons: unknown[] = [];
 
     const fetchMock = vi.fn((input: RequestInfo | URL, init?: RequestInit) => {
       return new Promise<Response>((resolve, reject) => {
@@ -24,9 +25,14 @@ describe("search request race", () => {
           return;
         }
 
-        signal.addEventListener("abort", () => reject(signal.reason), {
-          once: true,
-        });
+        signal.addEventListener(
+          "abort",
+          () => {
+            abortReasons.push(signal.reason);
+            reject(signal.reason);
+          },
+          { once: true },
+        );
 
         requests.push({ url: String(input), signal, resolve });
       });
@@ -48,6 +54,8 @@ describe("search request race", () => {
 
     controller.setQuery("spain");
     expect(requests[0].signal.aborted).toBe(true);
+    expect(abortReasons).toHaveLength(1);
+    expect(abortReasons[0]).toMatchObject({ name: "AbortError" });
 
     await vi.advanceTimersByTimeAsync(250);
     expect(requests).toHaveLength(2);
