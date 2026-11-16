@@ -1,6 +1,7 @@
 import { debounce } from "./debounce";
 import { mapCountryResponse, type CountryCardData } from "./mapCountryResponse";
 import { searchCountries } from "./searchCountries";
+import { classifySearchError, type SearchErrorKind } from "./searchError";
 
 export type SearchStatus = "idle" | "loading" | "results" | "empty" | "error";
 
@@ -9,6 +10,7 @@ export interface SearchState {
   query: string;
   countries: CountryCardData[];
   error?: Error;
+  errorKind?: Exclude<SearchErrorKind, "aborted">;
 }
 
 export type SearchStateListener = (state: SearchState) => void;
@@ -49,7 +51,8 @@ export function createSearchController(
         countries,
       });
     } catch (error) {
-      if (error instanceof DOMException && error.name === "AbortError") {
+      const failure = classifySearchError(error);
+      if (failure.kind === "aborted") {
         return;
       }
 
@@ -61,8 +64,8 @@ export function createSearchController(
         status: "error",
         query,
         countries: [],
-        error:
-          error instanceof Error ? error : new Error("Country search failed"),
+        error: failure.error,
+        errorKind: failure.kind,
       });
     }
   }, debounceMs);
