@@ -8,17 +8,19 @@
     BlinkMacSystemFont,
     "Segoe UI",
     sans-serif;
-  color: #17212b;
-  background: #f5f7fa;
+  color: #303030;
+  background: #f4f4f4;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
-  --ink: #17212b;
-  --muted: #647383;
-  --line: #e1e7ee;
+  --ink: #303030;
+  --muted: #666;
+  --line: #dedede;
   --paper: #ffffff;
-  --accent: #315bd6;
-  --accent-soft: #edf2ff;
+  --accent: #b1361e;
+  --accent-hover: #922b18;
+  --accent-soft: #fff0eb;
+  --accent-line: #e8b9ad;
   --danger: #b54735;
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
@@ -31,7 +33,7 @@ body {
   min-width: 320px;
   min-height: 100svh;
   margin: 0;
-  background: #f5f7fa;
+  background: #f4f4f4;
 }
 
 button,
@@ -42,7 +44,7 @@ input {
 button:focus-visible,
 input:focus-visible,
 a:focus-visible {
-  outline: 3px solid rgb(49 91 214 / 42%);
+  outline: 3px solid rgb(177 54 30 / 42%);
   outline-offset: 3px;
 }
 
@@ -85,7 +87,7 @@ a:focus-visible {
 }
 
 .masthead-note {
-  color: #758394;
+  color: #777;
 }
 
 .hero {
@@ -121,10 +123,10 @@ a:focus-visible {
   align-items: center;
   width: min(100%, 660px);
   min-height: 58px;
-  border: 1px solid #cdd7e3;
+  border: 1px solid #d4d4d4;
   border-radius: 10px;
   background: var(--paper);
-  box-shadow: 0 4px 14px rgb(24 39 58 / 5%);
+  box-shadow: 0 4px 14px rgb(0 0 0 / 5%);
   transition:
     border-color 150ms ease,
     box-shadow 150ms ease;
@@ -132,7 +134,7 @@ a:focus-visible {
 
 .search-form:focus-within {
   border-color: var(--accent);
-  box-shadow: 0 0 0 4px rgb(49 91 214 / 10%);
+  box-shadow: 0 0 0 4px rgb(177 54 30 / 10%);
 }
 
 .search-mark {
@@ -155,7 +157,7 @@ a:focus-visible {
 }
 
 .search-input::placeholder {
-  color: #8a97a6;
+  color: #8a8a8a;
 }
 
 .search-input:focus-visible {
@@ -165,7 +167,7 @@ a:focus-visible {
 .search-note {
   display: block;
   margin-top: 9px;
-  color: #7b8998;
+  color: #777;
   font-size: 9px;
   font-weight: 500;
   letter-spacing: 0.025em;
@@ -180,7 +182,7 @@ a:focus-visible {
 }
 
 .history-label {
-  color: #788797;
+  color: #777;
   font-family: var(--mono);
   font-size: 9px;
   font-weight: 600;
@@ -196,9 +198,9 @@ a:focus-visible {
 .history-item {
   min-height: 30px;
   padding: 0 11px;
-  border: 1px solid #dce4ee;
+  border: 1px solid #ddd;
   border-radius: 999px;
-  color: #405268;
+  color: #4a4a4a;
   background: #fff;
   cursor: pointer;
   font-size: 11px;
@@ -209,8 +211,8 @@ a:focus-visible {
 }
 
 .history-item:hover {
-  border-color: #b5c6ee;
-  color: #2348b0;
+  border-color: var(--accent-line);
+  color: var(--accent-hover);
   background: var(--accent-soft);
 }
 
@@ -254,7 +256,7 @@ a:focus-visible {
   padding: 24px;
   border: 1px solid var(--line);
   border-radius: 12px;
-  background: #fff;
+  background: var(--paper);
   text-align: center;
 }
 
@@ -295,7 +297,7 @@ a:focus-visible {
   width: 22px;
   height: 22px;
   margin-bottom: 11px;
-  border: 2px solid #dce5fa;
+  border: 2px solid #e5d6d2;
   border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 750ms linear infinite;
@@ -319,9 +321,9 @@ a:focus-visible {
 
 .retry-button,
 .detail-close {
-  border: 1px solid #cad5e3;
+  border: 1px solid #d4d4d4;
   border-radius: 7px;
-  color: #294db7;
+  color: var(--accent);
   background: #fff;
   cursor: pointer;
   font-size: 12px;
@@ -339,7 +341,8 @@ a:focus-visible {
 
 .retry-button:hover,
 .detail-close:hover {
-  border-color: #b9c9ed;
+  border-color: var(--accent-line);
+  color: var(--accent-hover);
   background: var(--accent-soft);
 }
 
@@ -369,7 +372,7 @@ a:focus-visible {
   border: 1px solid var(--line);
   border-radius: 10px;
   color: var(--ink);
-  background: #fff;
+  background: var(--paper);
   cursor: pointer;
   text-align: left;
   transition:
@@ -381,8 +384,8 @@ a:focus-visible {
 .country-card:hover,
 .country-card[aria-pressed="true"] {
   transform: translateY(-1px);
-  border-color: #b6c7ee;
-  box-shadow: 0 5px 14px rgb(28 51 96 / 7%);
+  border-color: var(--accent-line);
+  box-shadow: 0 5px 14px rgb(66 36 28 / 8%);
 }
 
 .card-topline {
@@ -447,7 +450,7 @@ a:focus-visible {
 }
 
 .card-population {
-  color: #34465d;
+  color: #414141;
   font-family: var(--mono);
   font-size: 10px;
   font-weight: 600;
@@ -462,7 +465,7 @@ a:focus-visible {
   padding: 18px;
   border: 1px solid var(--line);
   border-radius: 10px;
-  background: #fff;
+  background: var(--paper);
 }
 
 .detail-panel::backdrop {
