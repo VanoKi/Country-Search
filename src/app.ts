@@ -39,21 +39,23 @@ function formatPopulation(population: number): string {
 export function mountCountrySearch(root: HTMLElement): void {
   const shell = makeElement("main", "app-shell");
   const masthead = makeElement("header", "masthead");
-  const brand = makeElement("a", "brand", "Atlas / 01");
+  const brand = makeElement("a", "brand", "Country Search");
   brand.href = "#top";
-  const mastheadNote = makeElement("span", "masthead-note", "WORLD INDEX");
+  const mastheadNote = makeElement(
+    "span",
+    "masthead-note",
+    "COUNTRY DIRECTORY",
+  );
   masthead.append(brand, mastheadNote);
 
   const hero = makeElement("section", "hero");
   hero.id = "top";
-  const eyebrow = makeElement("p", "eyebrow", "A FIELD GUIDE TO THE WORLD");
-  const title = makeElement("h1", "hero-title");
-  title.append("The world, ");
-  title.append(makeElement("span", "title-accent", "closer."));
+  const eyebrow = makeElement("p", "eyebrow", "COUNTRY DIRECTORY");
+  const title = makeElement("h1", "hero-title", "Find a country");
   const intro = makeElement(
     "p",
     "hero-copy",
-    "Search for a country to explore its place, people and details.",
+    "Search by name to explore capitals, regions and country details.",
   );
 
   const searchForm = makeElement("form", "search-form");
@@ -66,13 +68,13 @@ export function mountCountrySearch(root: HTMLElement): void {
   input.id = "country-query";
   input.type = "search";
   input.name = "country";
-  input.placeholder = "Try a country name, like Japan";
+  input.placeholder = "Search countries…";
   input.autocomplete = "off";
   input.setAttribute("aria-describedby", "search-note");
   const searchNote = makeElement(
     "span",
     "search-note",
-    "Start typing to search · results update as you go",
+    "Type a country name · results update as you go",
   );
   searchNote.id = "search-note";
   const historyPanel = makeElement("div", "history-panel");
@@ -86,8 +88,12 @@ export function mountCountrySearch(root: HTMLElement): void {
   const content = makeElement("section", "content-area");
   content.setAttribute("aria-label", "Country search results");
   const resultsHeading = makeElement("div", "results-heading");
-  const sectionLabel = makeElement("p", "eyebrow", "YOUR ATLAS");
-  const resultsTitle = makeElement("h2", "section-title", "Explore countries");
+  const sectionLabel = makeElement("p", "eyebrow", "SEARCH RESULTS");
+  const resultsTitle = makeElement(
+    "h2",
+    "section-title",
+    "Start with a search",
+  );
   resultsHeading.append(sectionLabel, resultsTitle);
 
   const stateMessage = makeElement("div", "state-message");
@@ -102,8 +108,8 @@ export function mountCountrySearch(root: HTMLElement): void {
 
   const footer = makeElement("footer", "site-footer");
   footer.append(
-    makeElement("span", "footer-mark", "A / 01"),
-    makeElement("span", "footer-copy", "A small atlas for the curious."),
+    makeElement("span", "footer-mark", "COUNTRY SEARCH"),
+    makeElement("span", "footer-copy", "Country data, made easy to explore."),
   );
 
   shell.append(masthead, hero, content, footer);
