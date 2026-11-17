@@ -98,7 +98,6 @@ a:focus-visible {
 }
 .title-accent {
   color: var(--clay);
-  font-style: italic;
 }
 .hero-copy {
   margin: 20px auto 31px;
@@ -390,7 +389,6 @@ a:focus-visible {
   color: var(--moss);
   font-family: var(--serif);
   font-size: 14px;
-  font-style: italic;
 }
 .detail-panel {
   display: none;
@@ -468,7 +466,6 @@ a:focus-visible {
   color: #879188;
   font-family: var(--serif);
   font-size: 12px;
-  font-style: italic;
 }
 .sr-only {
   position: absolute;
