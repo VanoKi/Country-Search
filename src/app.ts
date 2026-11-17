@@ -279,6 +279,16 @@ export function mountCountrySearch(root: HTMLElement): void {
 
   function renderState(state: SearchState): void {
     latestState = state;
+    resultsTitle.textContent =
+      state.status === "results"
+        ? `${state.countries.length} ${state.countries.length === 1 ? "country" : "countries"}`
+        : state.status === "idle"
+          ? "Start with a search"
+          : state.status === "loading"
+            ? "Searching…"
+            : state.status === "empty"
+              ? "No matches"
+              : "Search needs attention";
     if (
       state.status === "results" ||
       state.status === "empty" ||
@@ -356,7 +366,6 @@ export function mountCountrySearch(root: HTMLElement): void {
       return;
     }
 
-    resultsTitle.textContent = `${state.countries.length} ${state.countries.length === 1 ? "country" : "countries"}`;
     if (state.countries.length > 0) {
       stateMessage.append(
         makeElement("span", "results-query-label", "RESULTS FOR"),
