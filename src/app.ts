@@ -366,12 +366,6 @@ export function mountCountrySearch(root: HTMLElement): void {
       return;
     }
 
-    if (state.countries.length > 0) {
-      stateMessage.append(
-        makeElement("span", "results-query-label", "RESULTS FOR"),
-        makeElement("span", "results-query", state.query),
-      );
-    }
     if (
       selectedCountry &&
       !state.countries.some((country) => country.name === selectedCountry?.name)

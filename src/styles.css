@@ -464,19 +464,6 @@ a:focus-visible {
   white-space: nowrap;
 }
 
-.results-query-label {
-  margin-left: auto;
-  color: #8390a0;
-  font-size: 8px;
-}
-
-.results-query {
-  margin-left: 8px;
-  color: var(--accent);
-  font-size: 12px;
-  font-weight: 650;
-}
-
 .detail-panel {
   display: none;
   align-self: start;
