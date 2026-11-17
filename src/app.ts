@@ -101,9 +101,11 @@ export function mountCountrySearch(root: HTMLElement): void {
   stateMessage.setAttribute("aria-live", "polite");
   const resultLayout = makeElement("div", "result-layout");
   const results = makeElement("div", "country-grid");
-  const details = makeElement("aside", "detail-panel");
+  const details = document.createElement("dialog");
+  details.className = "detail-panel";
+  details.id = "country-details";
   details.setAttribute("aria-label", "Country details");
-  resultLayout.append(results, details);
+  resultLayout.append(results);
   content.append(resultsHeading, stateMessage, resultLayout);
 
   const footer = makeElement("footer", "site-footer");
@@ -112,7 +114,7 @@ export function mountCountrySearch(root: HTMLElement): void {
     makeElement("span", "footer-copy", "Country data, made easy to explore."),
   );
 
-  shell.append(masthead, hero, content, footer);
+  shell.append(masthead, hero, content, details, footer);
   root.replaceChildren(shell);
 
   let selectedCountry: CountryCardData | undefined;
@@ -162,25 +164,23 @@ export function mountCountrySearch(root: HTMLElement): void {
 
   function renderDetails(country: CountryCardData | undefined): void {
     if (!country) {
+      selectedCountry = undefined;
       details.replaceChildren();
-      details.classList.remove("detail-panel-visible");
+      if (details.open) details.close();
       return;
     }
 
-    details.classList.add("detail-panel-visible");
     const panelHeader = makeElement("div", "detail-header");
     const detailEyebrow = makeElement("p", "eyebrow", "COUNTRY PROFILE");
     const closeButton = makeElement("button", "detail-close", "Close");
     closeButton.type = "button";
     closeButton.setAttribute("aria-label", "Close country details");
-    closeButton.addEventListener("click", () => {
-      selectedCountry = undefined;
-      renderDetails(undefined);
-      renderCards(latestState.countries);
-    });
+    closeButton.addEventListener("click", () => details.close());
     panelHeader.append(detailEyebrow, closeButton);
 
     const countryName = makeElement("h3", "detail-title", country.name);
+    countryName.id = "country-details-title";
+    details.setAttribute("aria-labelledby", countryName.id);
     const flag = makeElement("span", "detail-flag", country.flag || "🌐");
     flag.setAttribute("aria-hidden", "true");
     const countryDescription = makeElement(
@@ -237,6 +237,7 @@ export function mountCountrySearch(root: HTMLElement): void {
       countryDescription,
       stats,
     );
+    if (!details.open) details.showModal();
   }
 
   function renderCards(countries: CountryCardData[]): void {
@@ -244,6 +245,8 @@ export function mountCountrySearch(root: HTMLElement): void {
       const card = makeElement("button", "country-card");
       card.type = "button";
       card.setAttribute("aria-pressed", String(selectedCountry === country));
+      card.setAttribute("aria-haspopup", "dialog");
+      card.setAttribute("aria-controls", details.id);
 
       const cardTop = makeElement("span", "card-topline");
       const flag = makeElement("span", "card-flag", country.flag || "🌐");
@@ -269,13 +272,32 @@ export function mountCountrySearch(root: HTMLElement): void {
       card.append(cardTop, name, capital, cardBottom);
       card.addEventListener("click", () => {
         selectedCountry = country;
-        renderCards(latestState.countries);
+        updateCardSelection();
         renderDetails(country);
       });
       return card;
     });
     results.replaceChildren(...cards);
   }
+
+  function updateCardSelection(): void {
+    results
+      .querySelectorAll<HTMLButtonElement>(".country-card")
+      .forEach((card, index) => {
+        card.setAttribute(
+          "aria-pressed",
+          String(latestState.countries[index] === selectedCountry),
+        );
+      });
+  }
+
+  details.addEventListener("close", () => {
+    selectedCountry = undefined;
+    updateCardSelection();
+  });
+  details.addEventListener("click", (event) => {
+    if (event.target === details) details.close();
+  });
 
   function renderState(state: SearchState): void {
     latestState = state;
